@@ -54,6 +54,17 @@ MongoClient.connect('mongodb://localhost:27017/', (err, db) => {
 })
 
 http.createServer((req, res) => {
+  // Set CORS headers
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Request-Method', '*');
+	res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+	res.setHeader('Access-Control-Allow-Headers', '*');
+	if ( req.method === 'OPTIONS' ) {
+		res.writeHead(200);
+		res.end();
+		return;
+	}
+
   var url = req.url;
 
   if(url === '/allConversions') {
@@ -61,7 +72,7 @@ http.createServer((req, res) => {
     res.end();
   }
   else {
-    res.write('Home')
+    res.write('404 - Page not found.')
     res.end();
   }
 
