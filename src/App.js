@@ -36,8 +36,35 @@ class App extends Component {
     super(props)
 
     this.state = {
-      conversions: []
+      conversions: [],
+      inputValue: "",
     }
+  }
+
+  onInputChange(event) {
+    this.setState({
+      inputValue: event.target.value
+    })
+  }
+
+  convert(type) {
+    fetch("http://localhost:5000/convert", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        type: type,
+        number: `${this.state.inputValue}`
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log("Result: " + data.number)
+      this.setState({
+        result: data.number
+      })
+    })
   }
 
   componentWillMount() {
@@ -71,8 +98,15 @@ class App extends Component {
           <div>
             <Input
               placeholder="Enter value to convert"
+              value={this.state.inputValue}
+              onChange={(e) => this.onInputChange(e)}
             />
-            <Button variant="contained" color="primary" className={classes.button}>Convert</Button>
+
+            <Button variant="contained" color="primary" className={classes.button} onClick={() => this.convert("a2r")}>Convert</Button>
+          </div>
+
+          <div>
+            Result: {this.state.result}
           </div>
         </div>
 
