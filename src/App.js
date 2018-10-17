@@ -10,6 +10,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
 
 
 const styles = theme => ({
@@ -29,6 +35,15 @@ const styles = theme => ({
   table: {
     minWidth: 700,
   },
+  formControl: {
+    margin: theme.spacing.unit * 3,
+  },
+  group: {
+    margin: `${theme.spacing.unit}px 0`,
+  },
+  typography: {
+    useNextVariants: true,
+  },
 });
 
 class App extends Component {
@@ -38,7 +53,14 @@ class App extends Component {
     this.state = {
       conversions: [],
       inputValue: "",
+      value: 'r2a'
     }
+  }
+
+  handleConversionChange = (event) => {
+    this.setState({
+      value: event.target.value
+    })
   }
 
   onInputChange(event) {
@@ -65,9 +87,13 @@ class App extends Component {
         result: data.number
       })
     })
+
+    setTimeout(() => {
+      this.fetchAllConversions()
+    }, 1500);
   }
 
-  componentWillMount() {
+  fetchAllConversions() {
     fetch("http://localhost:5000/allConversions")
     .then(res => res.json())
     .then(data => {
@@ -75,6 +101,11 @@ class App extends Component {
         conversions: data
       })
     })
+  }
+
+  componentWillMount() {
+    this.fetchAllConversions()
+
   }
 
   render() {
@@ -96,17 +127,31 @@ class App extends Component {
         <div>
           Converter
           <div>
+            <FormControl component="fieldset" className={classes.formControl}>
+              <RadioGroup
+                aria-label=""
+                name="ConvertOptions"
+                className={classes.group}
+                value={this.state.value}
+                onChange={this.handleConversionChange}
+              >
+                <FormControlLabel value="r2a" control={<Radio />} label="Roman to Arabic" />
+                <FormControlLabel value="a2r" control={<Radio />} label="Arabic to Roman" />
+              </RadioGroup>
+            </FormControl>
+
             <Input
               placeholder="Enter value to convert"
               value={this.state.inputValue}
               onChange={(e) => this.onInputChange(e)}
             />
-
-            <Button variant="contained" color="primary" className={classes.button} onClick={() => this.convert("a2r")}>Convert</Button>
+            <Button variant="contained" color="primary" className={classes.button} onClick={() => this.convert(this.state.value)}>Convert</Button>
           </div>
 
           <div>
+
             Result: {this.state.result}
+
           </div>
         </div>
 
